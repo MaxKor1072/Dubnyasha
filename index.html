@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дубняша: День открытых дверей</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/logo_new_small_rus.png" type="image/png">
+</head>
+<body>
+    <!-- Панель пользователя -->
+    <div class="user-panel">
+        <span id="user-greeting"></span>
+        <button id="logout-btn" class="logout-btn">Выйти</button>
+        <button id="edit-btn" class="edit-btn" style="display: none;">✏️ Изменить игру</button>
+    </div>
+
+    <!-- Главная страница с картой уровней -->
+    <div id="main-page">
+        <!-- Новая структура: фото слева, контент справа -->
+        <div class="game-layout">
+            <!-- Большое фото Дубняши -->
+            <img src="images/dubnyasha-full.png" class="game-mascot" alt="Дубняша">
+            
+            <!-- Контент: заголовок + описание -->
+            <div class="game-content">
+                <h1 class="game-title">🏛️ Дубняша: День открытых дверей</h1>
+                <div class="game-description">
+                    <p>Дубняша проведёт тебя по институтам и факультетам и поможет узнать много нового о нашем университете.</p>
+                    <p>Пройди все 10 уровней, чтобы познакомиться с историей, структурой и интересными фактами.</p>
+                    <p>Готов? Тогда вперёд — к открытиям!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-map-container" id="game-map-container">
+            <!-- Карта с уровнями будет сгенерирована через JavaScript -->
+        </div>
+    </div>
+
+    <!-- Страница уровня -->
+    <div id="level-page">
+        <div class="level-container">
+            <div class="question" id="question-text"></div>
+            <div class="answers-container" id="answers-container">
+                <!-- Варианты ответов будут добавлены через JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="back-btn" onclick="goToMainPage()">← Назад к карте</button>
+            <button class="dubnyasha-btn" onclick="showDubnyashaInfo()">🐾 О Дубняше</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно с результатом -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <h2 id="result-title"></h2>
+            <p id="result-message"></p>
+            <button class="modal-btn" onclick="closeModal()">Продолжить</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактора (для администратора) -->
+    <div class="modal" id="editor-modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <span class="close-editor-btn" onclick="closeEditorModal()">&times;</span>
+            <h2>Редактирование игры</h2>
+
+             <!-- Панель быстрых пресетов -->
+            <div class="presets-bar">
+                <span>🎨 Быстрые пресеты:</span>
+                <button class="preset-btn" data-preset="default">🏛️ День открытых дверей</button>
+                <button class="preset-btn" data-preset="newyear">🎄 Новый год</button>
+                <button class="preset-btn" data-preset="september">🔬 Неделя науки</button>
+            </div>
+            
+            <!-- Вкладки -->
+            <div class="editor-tabs">
+                <button class="tab-btn active" data-tab="questions-tab">📝 Вопросы</button>
+                <button class="tab-btn" data-tab="map-tab">🗺️ Карта</button>
+            </div>
+
+            <!-- Вкладка: Редактор вопросов -->
+            <div id="questions-tab" class="tab-content active">
+                <div id="editor-form"></div>
+                <div class="editor-actions">
+                    <button class="modal-btn" id="save-editor-btn">💾 Сохранить вопросы</button>
+                    <button class="modal-btn" id="reset-editor-btn">🔄 Сбросить всё</button>
+                    <button class="modal-btn" onclick="closeEditorModal()">Отмена</button>
+                </div>
+            </div>
+
+            <!-- Вкладка: Настройки карты -->
+            <div id="map-tab" class="tab-content">
+                <div class="map-settings">
+                    <p>Текущий фон карты:</p>
+                    <div class="map-preview-container">
+                        <img id="current-map-preview" class="map-preview" alt="Предпросмотр фона">
+                    </div>
+                    <div class="map-buttons">
+                        <button class="modal-btn" id="upload-bg-btn">🖼️ Загрузить новый фон</button>
+                        <button class="modal-btn" id="reset-bg-btn">↩️ Сбросить фон</button>
+                    </div>
+                    <p class="map-hint">* Смена фона не сбрасывает прогресс игроков и вопросы.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

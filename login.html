@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | Дубняша: День открытых дверей</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/logo_new_small_rus.png" type="image/png">
+    <style>
+        /* Дополнительные стили для страницы входа */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .login-wrapper {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95));
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            border: 3px solid #737373;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #004caf;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #004caf, #004caf);
+            border: none;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        .error-message {
+            color: #ff6d00;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .demo-credentials {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            background: rgba(10, 69, 218, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-logo">
+            <img src="images/logo_new_small_rus.png" alt="Университет Дубна">
+        </div>
+        <form id="login-form">
+            <div class="form-group">
+                <input type="text" id="username" class="form-control" placeholder="Логин" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" class="form-control" placeholder="Пароль" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-primary">Вход</button>
+            <div id="login-error" class="error-message" style="display: none;"></div>
+        </form>
+        <div class="demo-credentials">
+            <p><strong>Тестовые пользователи:</strong></p>
+            <p>Обычный: user1 / pass1 &nbsp;|&nbsp; user2 / pass2</p>
+            <p>Администратор: admin / admin</p>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
