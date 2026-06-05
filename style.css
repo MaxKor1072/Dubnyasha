@@ -191,11 +191,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
+    z-index: 10;
     transition: var(--transition-bounce);
     background: transparent;
     border: none;
     box-shadow: none;
+    pointer-events: none;
 }
 
 .dubnyasha-character .dubnyasha-mascot-img {
