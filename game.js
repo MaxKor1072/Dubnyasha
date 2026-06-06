@@ -163,9 +163,9 @@ const presets = {
             },
             {
                 question: "Чем, помимо еды, славится новогодняя ярмарка «Русская тройка»?",
-                type: "multiple",
+                type: "single",
                 answers: ["Аттракционами", "Искусными произведениями ручной работы", "Лотереей", "Концертом звёзд"],
-                correctAnswers: [1]
+                correct: 1
             },
             {
                 question: "Что было частью программы студенческой Масленицы в университете?",
@@ -245,10 +245,15 @@ const presets = {
                 correct: 2
             },
             {
-                question: "Названия каких танцев вошли в конкурсную программу новогоднего бала университета?",
+                question: "Какие фундаментальные научные идеи и понятия связаны с Дубной и Объединенным институтом ядерных исследований (ОИЯИ)?",
                 type: "multiple",
-                answers: ["Русская кадриль", "Контрданс «Зимний сон»", "Изящный вальс «Три орешка»", "Мазурка"],
-                correctAnswers: [0, 1, 2]
+                answers: [
+                    "Нейтринные осцилляции",
+                    "Цветные кварки",
+                    "Теория струн",
+                    "«Дубненский кварковый мешок»"
+                ],
+                correctAnswers: [0, 1, 3]
             },
             {
                 question: "Расположите в хронологическом порядке события из истории науки в Университете «Дубна».",
@@ -656,23 +661,22 @@ function showFinalCongratulations() {
     const mainPage = document.getElementById('main-page');
     mainPage.innerHTML = `
         <div class="final-congratulations">
-            <div class="congrats-title">🎓 ПОЗДРАВЛЯЕМ! 🎓</div>
-            <div class="congrats-subtitle">Ты прошёл День открытых дверей!</div>
+            <div class="congrats-title">🎉 ПОЗДРАВЛЯЕМ! 🎉</div>
+            <div class="congrats-subtitle">Ты прошёл все испытания!</div>
             <div class="final-content">
-                <div class="dubnyasha-final">🐾</div>
-                <p>Теперь ты знаешь университет «Дубна» от и до!</p>
-                <p>Дубняша благодарит тебя за участие и ждёт в стенах alma mater!</p>
+                <img src="images/dubnyasha-full.png" class="dubnyasha-final-img" alt="Дубняша">
+                <p>Дубняша благодарит тебя за участие и ждёт в стенах Университета Дубна!</p>
                 <div class="achievements">
-                    <h3>Твои достижения:</h3>
+                    <h3>📜 Твои достижения:</h3>
                     <ul>
-                        <li>✅ Изучил историю и структуру университета</li>
-                        <li>✅ Познакомился с институтами и факультетами</li>
-                        <li>✅ Узнал о ключевых партнёрах и ректорах</li>
-                        <li>✅ Доказал, что готов к поступлению!</li>
+                        <li>✨ Прошёл все испытания до конца</li>
+                        <li>📚 Узнал много нового об Университете «Дубна»</li>
+                        <li>🧠 Проявил смекалку и эрудицию</li>
+                        <li>🏆 Получил почётное звание «Знаток университета» от Дубняши</li>
                     </ul>
                 </div>
                 <div class="final-stats">
-                    <p>Пройдено уровней: <strong>${completedLevels.size}/${gameData.length}</strong></p>
+                    🎯 Пройдено уровней: <strong>${completedLevels.size}/${gameData.length}</strong>
                 </div>
                 <button class="restart-btn" onclick="restartGame()">🔄 Пройти заново</button>
             </div>
