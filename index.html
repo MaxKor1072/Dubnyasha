@@ -19,10 +19,7 @@
     <div id="main-page">
         <!-- Новая структура: фото слева, контент справа -->
         <div class="game-layout">
-            <!-- Большое фото Дубняши -->
             <img src="images/dubnyasha-full.png" class="game-mascot" alt="Дубняша">
-            
-            <!-- Контент: заголовок + описание -->
             <div class="game-content">
                 <h1 class="game-title">🏛️ Дубняша: День открытых дверей</h1>
                 <div class="game-description">
@@ -31,6 +28,20 @@
                     <p>Готов? Тогда вперёд — к открытиям!</p>
                 </div>
             </div>
+        </div>
+
+        <!-- Блок статистики и достижений -->
+        <div id="stats-panel" class="stats-panel">
+            <div class="stats-item">
+                ⏱ Текущее время: <strong id="timer-display">0</strong> сек
+            </div>
+            <div class="stats-item">
+                🏆 Лучшее время: <strong id="best-time-display">—</strong> сек
+            </div>
+            <div class="stats-item">
+                🎮 Прохождений: <strong id="games-played-display">0</strong>
+            </div>
+            <button id="achievements-badge" class="achievements-btn">🏅 Мои достижения</button>
         </div>
 
         <div class="game-map-container" id="game-map-container">
@@ -106,6 +117,15 @@
                     <p class="map-hint">* Смена фона не сбрасывает прогресс игроков и вопросы.</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно достижений -->
+    <div id="achievements-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3>🏅 Мои достижения</h3>
+            <ul id="achievements-list-modal"></ul>
+            <button class="modal-btn" onclick="closeAchievementsModal()">Закрыть</button>
         </div>
     </div>
 
