@@ -277,6 +277,12 @@ let currentLevel = 0;
 let completedLevels = new Set();
 let customMapBackground = null;
 
+// Статистика и таймер
+let gameStartTime = null;          // время старта сессии (Date.now())
+let timerInterval = null;          // интервал обновления таймера
+let currentSessionCompleted = false; // чтобы не записывать рекорд дважды
+let mistakesCount = 0;             // счётчик ошибок за текущую сессию
+
 const levelCoordinates = {
     desktop: [
         { x: 25, y: 84 }, { x: 22, y: 61 }, { x: 9, y: 42 }, { x: 39, y: 32 },
@@ -349,6 +355,143 @@ function saveProgress() {
     }
 }
 
+// ==================== ФУНКЦИИ ТАЙМЕРА И СТАТИСТИКИ ====================
+function startGameTimer() {
+    if (gameStartTime === null && !currentSessionCompleted) {
+        gameStartTime = Date.now();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimerDisplay, 1000);
+    }
+}
+
+function stopGameTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+}
+
+function updateTimerDisplay() {
+    if (gameStartTime === null) {
+        document.getElementById('timer-display').innerText = '0';
+        return;
+    }
+    const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+    document.getElementById('timer-display').innerText = elapsed;
+}
+
+function getCurrentElapsedSeconds() {
+    if (gameStartTime === null) return 0;
+    return Math.floor((Date.now() - gameStartTime) / 1000);
+}
+
+function saveBestTimeIfNeeded() {
+    const user = sessionStorage.getItem('username');
+    if (!user) return false;
+    const elapsed = getCurrentElapsedSeconds();
+    if (elapsed === 0) return false;
+    const key = `bestTime_${user}`;
+    const currentBest = localStorage.getItem(key);
+    if (!currentBest || elapsed < parseInt(currentBest)) {
+        localStorage.setItem(key, elapsed);
+        document.getElementById('best-time-display').innerText = elapsed;
+        return true;
+    }
+    return false;
+}
+
+function incrementGamesPlayed() {
+    const user = sessionStorage.getItem('username');
+    if (!user) return;
+    let count = localStorage.getItem(`gamesPlayed_${user}`);
+    count = count ? parseInt(count) + 1 : 1;
+    localStorage.setItem(`gamesPlayed_${user}`, count);
+    document.getElementById('games-played-display').innerText = count;
+}
+
+function updatePersonalStatsUI() {
+    const user = sessionStorage.getItem('username');
+    if (!user) return;
+    const best = localStorage.getItem(`bestTime_${user}`);
+    document.getElementById('best-time-display').innerText = best ? best : '—';
+    const played = localStorage.getItem(`gamesPlayed_${user}`);
+    document.getElementById('games-played-display').innerText = played ? played : '0';
+}
+
+function checkAndUnlockAchievements() {
+    const user = sessionStorage.getItem('username');
+    if (!user) return;
+    let achievements = JSON.parse(localStorage.getItem(`achievements_${user}`) || '[]');
+    const prevLength = achievements.length;
+    
+    const bestTime = localStorage.getItem(`bestTime_${user}`);
+    const gamesPlayed = parseInt(localStorage.getItem(`gamesPlayed_${user}`) || '0');
+    
+    // 1. Первый шаг (пройден хотя бы один уровень)
+    if (completedLevels.size >= 1 && !achievements.includes('first_step')) {
+        achievements.push('first_step');
+        alert('🎉 Достижение "Первые шаги"! (Пройден первый уровень)');
+    }
+    // 2. Скороход (лучшее время <= 120 секунд)
+    if (bestTime && bestTime <= 120 && !achievements.includes('speedy')) {
+        achievements.push('speedy');
+        alert('⚡ Достижение "Скороход"! (Прошёл игру быстрее 2 минут)');
+    }
+    // 3. Без ошибок (вся игра без ошибок)
+    if (completedLevels.size === gameData.length && mistakesCount === 0 && !achievements.includes('no_mistakes')) {
+        achievements.push('no_mistakes');
+        alert('🎯 Достижение "Без ошибок"! (Пройдена вся игра без единой ошибки)');
+    }
+    // 4. Марафонец (5 полных прохождений)
+    if (gamesPlayed >= 5 && !achievements.includes('marathon')) {
+        achievements.push('marathon');
+        alert('🏅 Достижение "Марафонец"! (Пройдено 5 раз)');
+    }
+    
+    if (achievements.length > prevLength) {
+        localStorage.setItem(`achievements_${user}`, JSON.stringify(achievements));
+        renderAchievementsList();
+    }
+}
+
+function renderAchievementsList() {
+    const user = sessionStorage.getItem('username');
+    if (!user) return;
+    const achievements = JSON.parse(localStorage.getItem(`achievements_${user}`) || '[]');
+    const achievementNames = {
+        first_step: '👣 Первые шаги',
+        speedy: '⚡ Скороход',
+        no_mistakes: '🎯 Без ошибок',
+        marathon: '🏅 Марафонец'
+    };
+    const listUl = document.getElementById('achievements-list-modal');
+    if (listUl) {
+        listUl.innerHTML = achievements.map(a => `<li>${achievementNames[a] || a}</li>`).join('');
+        if (achievements.length === 0) listUl.innerHTML = '<li>Пока нет достижений. Проходите игру!</li>';
+    }
+}
+
+function showAchievementsModal() {
+    renderAchievementsList();
+    document.getElementById('achievements-modal').style.display = 'flex';
+}
+
+function closeAchievementsModal() {
+    document.getElementById('achievements-modal').style.display = 'none';
+}
+
+function onGameFullyCompleted() {
+    if (currentSessionCompleted) return;
+    currentSessionCompleted = true;
+    stopGameTimer();
+    const isNewRecord = saveBestTimeIfNeeded();
+    incrementGamesPlayed();
+    checkAndUnlockAchievements();
+    if (isNewRecord) {
+        alert(`🏆 Новый рекорд! ${getCurrentElapsedSeconds()} секунд!`);
+    }
+}
+
 // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
 function getCurrentCoordinates() {
     return window.innerWidth <= 768 ? levelCoordinates.mobile : levelCoordinates.desktop;
@@ -388,6 +531,18 @@ function escapeHtml(str) {
 
 // ==================== ФУНКЦИИ КАРТЫ ====================
 function initGame() {
+    updatePersonalStatsUI();
+    renderAchievementsList();
+    
+    // Если нет ни одного пройденного уровня и игра не завершена — сбрасываем таймер и счётчики сессии
+    if (completedLevels.size === 0 && gameData.length > 0) {
+        if (timerInterval) clearInterval(timerInterval);
+        gameStartTime = null;
+        currentSessionCompleted = false;
+        mistakesCount = 0;
+        document.getElementById('timer-display').innerText = '0';
+    }
+    
     if (completedLevels.size === gameData.length) {
         showFinalCongratulations();
         return;
@@ -480,6 +635,10 @@ function startLevel(levelIndex) {
     if (levelIndex > currentIndex && !completedLevels.has(levelIndex)) {
         alert('Сначала пройди предыдущие уровни!');
         return;
+    }
+    // Запускаем таймер при первом клике на уровень (если ещё не запущен и игра не завершена)
+    if (!currentSessionCompleted) {
+        startGameTimer();
     }
     currentLevel = levelIndex;
     document.getElementById('main-page').style.display = 'none';
@@ -622,8 +781,15 @@ function handleCorrectAnswer(resultTitle, resultMessage) {
     completedLevels.add(currentLevel);
     saveProgress();
 
+    // Проверка достижения "Первые шаги" при первом пройденном уровне
+    if (completedLevels.size === 1) {
+        checkAndUnlockAchievements();
+    }
+
     if (completedLevels.size === gameData.length) {
         resultMessage.textContent += "\n\n🎊 Ты прошел все уровни! 🎊";
+        // Игра завершена, фиксируем рекорд и достижения
+        onGameFullyCompleted();
     }
 }
 
@@ -631,6 +797,8 @@ function handleWrongAnswer(resultTitle, resultMessage) {
     resultTitle.textContent = '❌ Попробуй еще раз';
     resultMessage.textContent = 'Неверный ответ. Подумай еще!';
     resultTitle.classList.remove('celebrate');
+    // Увеличиваем счётчик ошибок
+    mistakesCount++;
 }
 
 function closeModal() {
@@ -688,7 +856,14 @@ function showFinalCongratulations() {
 }
 
 function restartGame() {
-    if (confirm('Начать игру заново?')) {
+    if (confirm('Начать игру заново? Все достижения и рекорды останутся, но текущий прогресс сбросится.')) {
+        // Сброс сессии
+        if (timerInterval) clearInterval(timerInterval);
+        gameStartTime = null;
+        currentSessionCompleted = false;
+        mistakesCount = 0;
+        document.getElementById('timer-display').innerText = '0';
+        
         const user = sessionStorage.getItem('username');
         localStorage.removeItem(`progress_${user}`);
         location.reload();
@@ -954,6 +1129,9 @@ document.addEventListener('click', function(e) {
         if (presetId) applyPreset(presetId);
     }
 });
+
+// Кнопка достижений
+document.getElementById('achievements-badge').onclick = showAchievementsModal;
 
 // ==================== ЗАПУСК ====================
 window.onload = function() {
