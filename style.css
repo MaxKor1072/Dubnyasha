@@ -895,3 +895,76 @@ body {
     0% { transform: translateY(0px); }
     100% { transform: translateY(-15px); }
 }
+
+/* Панель статистики - без фона, тёмный текст */
+.stats-panel {
+    background: transparent;
+    border-radius: 0;
+    padding: 6px 15px;
+    margin: 10px auto;
+    display: flex;
+    justify-content: center;  /* ← центрируем всё содержимое */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;           /* отступы между элементами */
+    color: var(--color-text-dark);
+    font-size: 1rem;
+    max-width: 700px;
+}
+
+.stats-item {
+    font-weight: normal;
+}
+
+.achievements-btn {
+    background: transparent;
+    color: var(--color-text-dark);
+    border: 1px solid var(--color-border-light);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-default);
+}
+
+
+/* Модальное окно достижений — нормальный размер текста */
+#achievements-modal .modal-content {
+    max-width: 400px;
+    padding: 30px 25px;
+}
+
+#achievements-modal ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+#achievements-modal li {
+    padding: 8px 12px;
+    font-size: 1.1rem;
+    color: var(--color-text-dark);
+    background: var(--color-hover-bg);
+    margin-bottom: 8px;
+    border-radius: 40px;
+    border-left: 4px solid var(--color-node-border);
+    text-align: left;
+}
+
+#achievements-modal .modal-btn {
+    margin-top: 10px;
+}
+
+
+
+.achievements-btn:hover {
+    background: var(--color-hover-bg);
+    border-color: var(--color-node-border);
+}
+
+/* Мобильная адаптация — если совсем тесно, кнопка переносится, но остаётся по центру */
+@media (max-width: 550px) {
+    .stats-panel {
+        gap: 12px 16px;
+    }
+}
