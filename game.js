@@ -120,7 +120,9 @@ const presets = {
     default: {
         name: "День открытых дверей",
         gameData: JSON.parse(JSON.stringify(defaultGameData)),
-        mapBackground: "images/game-map-background.jpg"
+        mapBackground: "images/game-map-background.jpg",
+        mascotFull: "images/dubnyasha-full.png",
+        mascotIcon: "images/dubnyasha-icon.png"
     },
     newyear: {
         name: "Новый год",
@@ -191,7 +193,9 @@ const presets = {
                 correctOrder: [0, 2, 3, 1]
             }
         ],
-        mapBackground: "images/newyear-bg.jpg"
+        mapBackground: "images/newyear-bg.jpg",
+        mascotFull: "images/dubnyasha-newyear-full.png",
+        mascotIcon: "images/dubnyasha-newyear-icon.png"
     },
     science: {
         name: "Неделя науки",
@@ -267,7 +271,9 @@ const presets = {
                 correctOrder: [2, 1, 3, 0]
             }
         ],
-        mapBackground: "images/science-bg.jpg"
+        mapBackground: "images/science-bg.jpg",
+        mascotFull: "images/dubnyasha-science-full.png",
+        mascotIcon: "images/dubnyasha-science-icon.png"
     }
 };
 
@@ -276,12 +282,14 @@ let gameData = [];
 let currentLevel = 0;
 let completedLevels = new Set();
 let customMapBackground = null;
+let customMascotFull = "images/dubnyasha-full.png";
+let customMascotIcon = "images/dubnyasha-icon.png";
 
 // Статистика и таймер
-let gameStartTime = null;          // время старта сессии (Date.now())
-let timerInterval = null;          // интервал обновления таймера
-let currentSessionCompleted = false; // чтобы не записывать рекорд дважды
-let mistakesCount = 0;             // счётчик ошибок за текущую сессию
+let gameStartTime = null;
+let timerInterval = null;
+let currentSessionCompleted = false;
+let mistakesCount = 0;
 
 const levelCoordinates = {
     desktop: [
@@ -334,6 +342,13 @@ function loadCustomData() {
         customMapBackground = 'images/game-map-background.jpg';
         localStorage.setItem('mapBackground', customMapBackground);
     }
+
+    const savedMascotFull = localStorage.getItem('mascotFull');
+    const savedMascotIcon = localStorage.getItem('mascotIcon');
+    if (savedMascotFull) customMascotFull = savedMascotFull;
+    if (savedMascotIcon) customMascotIcon = savedMascotIcon;
+    if (!localStorage.getItem('mascotFull')) localStorage.setItem('mascotFull', customMascotFull);
+    if (!localStorage.getItem('mascotIcon')) localStorage.setItem('mascotIcon', customMascotIcon);
 
     const user = sessionStorage.getItem('username');
     const savedProgress = localStorage.getItem(`progress_${user}`);
@@ -427,22 +442,18 @@ function checkAndUnlockAchievements() {
     const bestTime = localStorage.getItem(`bestTime_${user}`);
     const gamesPlayed = parseInt(localStorage.getItem(`gamesPlayed_${user}`) || '0');
     
-    // 1. Первый шаг (пройден хотя бы один уровень)
     if (completedLevels.size >= 1 && !achievements.includes('first_step')) {
         achievements.push('first_step');
         alert('🎉 Достижение "Первые шаги"! (Пройден первый уровень)');
     }
-    // 2. Скороход (лучшее время <= 120 секунд)
     if (bestTime && bestTime <= 120 && !achievements.includes('speedy')) {
         achievements.push('speedy');
         alert('⚡ Достижение "Скороход"! (Прошёл игру быстрее 2 минут)');
     }
-    // 3. Без ошибок (вся игра без ошибок)
     if (completedLevels.size === gameData.length && mistakesCount === 0 && !achievements.includes('no_mistakes')) {
         achievements.push('no_mistakes');
         alert('🎯 Достижение "Без ошибок"! (Пройдена вся игра без единой ошибки)');
     }
-    // 4. Марафонец (5 полных прохождений)
     if (gamesPlayed >= 5 && !achievements.includes('marathon')) {
         achievements.push('marathon');
         alert('🏅 Достижение "Марафонец"! (Пройдено 5 раз)');
@@ -533,8 +544,8 @@ function escapeHtml(str) {
 function initGame() {
     updatePersonalStatsUI();
     renderAchievementsList();
+    updateMascotImages(); // обновляем большую картинку Дубняши
     
-    // Если нет ни одного пройденного уровня и игра не завершена — сбрасываем таймер и счётчики сессии
     if (completedLevels.size === 0 && gameData.length > 0) {
         if (timerInterval) clearInterval(timerInterval);
         gameStartTime = null;
@@ -547,11 +558,14 @@ function initGame() {
         showFinalCongratulations();
         return;
     }
+    
     createGameMap();
 }
 
 function createGameMap() {
     const mapContainer = document.getElementById('game-map-container');
+    if (!mapContainer) return;
+    mapContainer.classList.remove('final-mode');
     mapContainer.innerHTML = '';
 
     const mapElement = document.createElement('div');
@@ -585,14 +599,13 @@ function createMapPaths(mapElement) {
     svg.style.top = '0';
     svg.style.left = '0';
     svg.style.zIndex = '1';
-    // Пути закомментированы
     mapElement.appendChild(svg);
 }
 
 function createDubnyashaCharacter(mapElement) {
     const dubnyasha = document.createElement('div');
     dubnyasha.className = 'dubnyasha-character';
-    dubnyasha.innerHTML = '<img src="images/dubnyasha-icon.png" class="dubnyasha-mascot-img" alt="Дубняша">';
+    dubnyasha.innerHTML = `<img src="${customMascotIcon}" class="dubnyasha-mascot-img" alt="Дубняша">`;
 
     const currentLevelIndex = getCurrentLevelIndex();
     const currentCoords = getCurrentCoordinates();
@@ -636,7 +649,6 @@ function startLevel(levelIndex) {
         alert('Сначала пройди предыдущие уровни!');
         return;
     }
-    // Запускаем таймер при первом клике на уровень (если ещё не запущен и игра не завершена)
     if (!currentSessionCompleted) {
         startGameTimer();
     }
@@ -781,14 +793,12 @@ function handleCorrectAnswer(resultTitle, resultMessage) {
     completedLevels.add(currentLevel);
     saveProgress();
 
-    // Проверка достижения "Первые шаги" при первом пройденном уровне
     if (completedLevels.size === 1) {
         checkAndUnlockAchievements();
     }
 
     if (completedLevels.size === gameData.length) {
         resultMessage.textContent += "\n\n🎊 Ты прошел все уровни! 🎊";
-        // Игра завершена, фиксируем рекорд и достижения
         onGameFullyCompleted();
     }
 }
@@ -797,7 +807,6 @@ function handleWrongAnswer(resultTitle, resultMessage) {
     resultTitle.textContent = '❌ Попробуй еще раз';
     resultMessage.textContent = 'Неверный ответ. Подумай еще!';
     resultTitle.classList.remove('celebrate');
-    // Увеличиваем счётчик ошибок
     mistakesCount++;
 }
 
@@ -826,13 +835,16 @@ function goToMainPage() {
 }
 
 function showFinalCongratulations() {
-    const mainPage = document.getElementById('main-page');
-    mainPage.innerHTML = `
+    const mapContainer = document.getElementById('game-map-container');
+    if (!mapContainer) return;
+    
+    mapContainer.classList.add('final-mode');
+    
+    mapContainer.innerHTML = `
         <div class="final-congratulations">
             <div class="congrats-title">🎉 ПОЗДРАВЛЯЕМ! 🎉</div>
             <div class="congrats-subtitle">Ты прошёл все испытания!</div>
             <div class="final-content">
-                <img src="images/dubnyasha-full.png" class="dubnyasha-final-img" alt="Дубняша">
                 <p>Дубняша благодарит тебя за участие и ждёт в стенах Университета Дубна!</p>
                 <div class="achievements">
                     <h3>📜 Твои достижения:</h3>
@@ -850,14 +862,12 @@ function showFinalCongratulations() {
             </div>
         </div>
     `;
-
-    const finalDiv = document.querySelector('.final-congratulations');
-    if (finalDiv) finalDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    mapContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function restartGame() {
     if (confirm('Начать игру заново? Все достижения и рекорды останутся, но текущий прогресс сбросится.')) {
-        // Сброс сессии
         if (timerInterval) clearInterval(timerInterval);
         gameStartTime = null;
         currentSessionCompleted = false;
@@ -930,9 +940,9 @@ function renderEditorForm(container) {
                     });
                 }
             } else if (type === 'order') {
-                const items = level.items || [];
-                fieldsContainer.innerHTML += `<label>Элементы (по одному на строку, порядок — правильный):</label>
-                    <textarea class="edit-order-items" rows="6">${items.join('\n')}</textarea>`;
+                const orderedItems = level.correctOrder.map(idx => level.items[idx]);
+                fieldsContainer.innerHTML += `<label>Элементы (по одному на строку, в правильном порядке):</label>
+                    <textarea class="edit-order-items" rows="6">${orderedItems.map(escapeHtml).join('\n')}</textarea>`;
             }
         }
 
@@ -983,10 +993,7 @@ function saveEditorChanges() {
 
     gameData = newGameData;
     saveGameData();
-
-    // Сброс прогресса всех пользователей
     resetAllPlayersProgress();
-
     closeEditorModal();
     initGame();
     alert('Данные игры обновлены! Прогресс всех игроков сброшен.');
@@ -996,8 +1003,12 @@ function resetToDefault() {
     if (confirm('Сбросить все вопросы и фон к исходным? Прогресс всех пользователей будет удалён!')) {
         gameData = JSON.parse(JSON.stringify(defaultGameData));
         saveGameData();
-        customMapBackground = 'images/game-map-background.jpg';
+        customMapBackground = presets.default.mapBackground;
+        customMascotFull = presets.default.mascotFull;
+        customMascotIcon = presets.default.mascotIcon;
         localStorage.setItem('mapBackground', customMapBackground);
+        localStorage.setItem('mascotFull', customMascotFull);
+        localStorage.setItem('mascotIcon', customMascotIcon);
         resetAllPlayersProgress();
         closeEditorModal();
         initGame();
@@ -1013,28 +1024,27 @@ function resetAllPlayersProgress() {
     });
     completedLevels.clear();
     const user = sessionStorage.getItem('username');
-    if (user) saveProgress(); // сохраняем пустой прогресс для текущего пользователя
+    if (user) saveProgress();
 }
 
 function applyPreset(presetId) {
     const preset = presets[presetId];
     if (!preset) return;
 
-    // 1. Меняем вопросы
     gameData = JSON.parse(JSON.stringify(preset.gameData));
     saveGameData();
 
-    // 2. Меняем фон карты
     customMapBackground = preset.mapBackground;
     localStorage.setItem('mapBackground', customMapBackground);
 
-    // 3. Сбрасываем прогресс всех игроков
-    resetAllPlayersProgress();
+    customMascotFull = preset.mascotFull;
+    customMascotIcon = preset.mascotIcon;
+    localStorage.setItem('mascotFull', customMascotFull);
+    localStorage.setItem('mascotIcon', customMascotIcon);
 
-    // 4. Перезапускаем игру (обновляем карту)
+    resetAllPlayersProgress();
     initGame();
 
-    // 5. Если редактор открыт — обновляем его содержимое
     const editorModal = document.getElementById('editor-modal');
     if (editorModal && editorModal.style.display === 'flex') {
         const formContainer = document.getElementById('editor-form');
@@ -1043,6 +1053,13 @@ function applyPreset(presetId) {
     }
 
     alert(`Пресет «${preset.name}» применён. Прогресс всех игроков сброшен.`);
+}
+
+function updateMascotImages() {
+    const mainMascot = document.querySelector('.game-mascot');
+    if (mainMascot) {
+        mainMascot.src = customMascotFull;
+    }
 }
 
 // ==================== ФУНКЦИИ ДЛЯ РЕДАКТОРА КАРТЫ ====================
@@ -1069,7 +1086,7 @@ function changeMapBackground() {
 
 function resetMapBackground() {
     if (confirm('Сбросить фон карты к исходному? Прогресс игроков останется неизменным.')) {
-        customMapBackground = 'images/game-map-background.jpg';
+        customMapBackground = presets.default.mapBackground;
         localStorage.setItem('mapBackground', customMapBackground);
         updateMapPreview();
         initGame();
@@ -1080,7 +1097,7 @@ function resetMapBackground() {
 function updateMapPreview() {
     const previewImg = document.getElementById('current-map-preview');
     if (previewImg) {
-        previewImg.src = customMapBackground || 'images/game-map-background.jpg';
+        previewImg.src = customMapBackground || presets.default.mapBackground;
     }
 }
 
@@ -1122,7 +1139,6 @@ const resetBgBtn = document.getElementById('reset-bg-btn');
 if (uploadBgBtn) uploadBgBtn.onclick = changeMapBackground;
 if (resetBgBtn) resetBgBtn.onclick = resetMapBackground;
 
-// Обработчик кликов по кнопкам пресетов (делегирование)
 document.addEventListener('click', function(e) {
     if (e.target.classList && e.target.classList.contains('preset-btn')) {
         const presetId = e.target.getAttribute('data-preset');
@@ -1130,7 +1146,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Кнопка достижений
 document.getElementById('achievements-badge').onclick = showAchievementsModal;
 
 // ==================== ЗАПУСК ====================
