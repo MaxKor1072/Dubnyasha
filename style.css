@@ -968,3 +968,12 @@ body {
         gap: 12px 16px;
     }
 }
+
+/* Режим финального поздравления: отключаем жёсткие размеры карты */
+.game-map-container.final-mode {
+    aspect-ratio: auto;
+    max-height: none;
+    overflow-y: auto;
+    background: var(--color-primary-bg);
+    box-shadow: none;
+}
