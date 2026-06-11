@@ -119,6 +119,8 @@ const defaultGameData = [
 const presets = {
     default: {
         name: "День открытых дверей",
+        mainTitle: "🏛️ Дубняша: День открытых дверей",
+        mainDescription: "Дубняша проведёт тебя по уровням и поможет узнать много нового о нашем университете. Пройди все 10 уровней, чтобы познакомиться с историей, структурой и интересными фактами.",
         gameData: JSON.parse(JSON.stringify(defaultGameData)),
         mapBackground: "images/game-map-background.jpg",
         mascotFull: "images/dubnyasha-full.png",
@@ -126,6 +128,8 @@ const presets = {
     },
     newyear: {
         name: "Новый год",
+        mainTitle: "🎄 Дубняша: Новогодний квиз",
+        mainDescription: "Дубняша подготовил праздничные вопросы о новогодних традициях университета. Узнай, как в «Дубне» встречают Новый год и весело проведи время!",
         gameData: [
             {
                 question: "Какая традиция существует в Университете «Дубна» в преддверии Нового года?",
@@ -199,6 +203,8 @@ const presets = {
     },
     science: {
         name: "Неделя науки",
+        mainTitle: "🔬 Дубняша: Неделя науки",
+        mainDescription: "Погрузись в мир научных открытий! Вопросы об исследованиях университета, передовых разработках и учёных, которые меняют мир.",
         gameData: [
             {
                 question: "В честь какого события в университете проходит День науки? Выберите все верные варианты.",
@@ -368,6 +374,16 @@ function saveProgress() {
     if (user) {
         localStorage.setItem(`progress_${user}`, JSON.stringify([...completedLevels]));
     }
+}
+
+// ==================== ОБНОВЛЕНИЕ ТЕМЫ ГЛАВНОГО ЭКРАНА ====================
+function updateMainScreenTheme(presetId) {
+    const preset = presets[presetId];
+    if (!preset) return;
+    const titleElem = document.querySelector('.game-title');
+    if (titleElem) titleElem.textContent = preset.mainTitle;
+    const descElem = document.querySelector('.game-description');
+    if (descElem) descElem.innerHTML = `<p>${preset.mainDescription}</p>`;
 }
 
 // ==================== ФУНКЦИИ ТАЙМЕРА И СТАТИСТИКИ ====================
@@ -544,7 +560,7 @@ function escapeHtml(str) {
 function initGame() {
     updatePersonalStatsUI();
     renderAchievementsList();
-    updateMascotImages(); // обновляем большую картинку Дубняши
+    updateMascotImages();
     
     if (completedLevels.size === 0 && gameData.length > 0) {
         if (timerInterval) clearInterval(timerInterval);
@@ -1041,8 +1057,17 @@ function applyPreset(presetId) {
     customMascotIcon = preset.mascotIcon;
     localStorage.setItem('mascotFull', customMascotFull);
     localStorage.setItem('mascotIcon', customMascotIcon);
+    
+    // Сохраняем выбранный пресет
+    localStorage.setItem('currentPreset', presetId);
 
     resetAllPlayersProgress();
+    
+    // Обновляем заголовок и описание на главном экране
+    updateMainScreenTheme(presetId);
+    // Обновляем картинку маскота на главной странице
+    updateMascotImages();
+    
     initGame();
 
     const editorModal = document.getElementById('editor-modal');
@@ -1152,5 +1177,15 @@ document.getElementById('achievements-badge').onclick = showAchievementsModal;
 window.onload = function() {
     if (!checkAuth()) return;
     loadCustomData();
+    
+    // Применяем тему главного экрана согласно сохранённому пресету (если есть)
+    const savedPreset = localStorage.getItem('currentPreset');
+    if (savedPreset && presets[savedPreset]) {
+        updateMainScreenTheme(savedPreset);
+    } else {
+        // По умолчанию — тема "День открытых дверей"
+        updateMainScreenTheme('default');
+    }
+    
     initGame();
 };
