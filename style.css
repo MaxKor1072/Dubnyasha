@@ -9,6 +9,7 @@
     --color-shadow: rgba(63, 63, 140, 0.1);
     --color-completed: #4CAF50;
     --color-node-border: #6A6FB0;
+    --color-panel-bg: #4C4CA9; /* новый цвет для панели */
     --color-modal-overlay: rgba(63, 63, 140, 0.7);
 
     --font-family-base: 'Segoe UI', 'Arial', sans-serif;
@@ -463,6 +464,7 @@ body {
     margin-left: auto;
     width: fit-content;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    background: var(--color-panel-bg);
 }
 
 #user-greeting {
@@ -472,9 +474,9 @@ body {
 
 .logout-btn,
 .edit-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: var(--color-white);
+    background: #FFFFFF;
+    border: 1px solid #FFFFFF;
+    color: var(--color-text-dark); /* #3F3F8C */
     padding: 6px 16px;
     border-radius: 40px;
     cursor: pointer;
@@ -485,7 +487,8 @@ body {
 
 .logout-btn:hover,
 .edit-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: #F0F2F8;
+    border-color: #F0F2F8;
 }
 
 /* ===== ЗАДАНИЯ НА ПОРЯДОК (DRAG & DROP) ===== */
