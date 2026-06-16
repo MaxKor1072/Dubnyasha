@@ -460,19 +460,19 @@ function checkAndUnlockAchievements() {
     
     if (completedLevels.size >= 1 && !achievements.includes('first_step')) {
         achievements.push('first_step');
-        alert('🎉 Достижение "Первые шаги"! (Пройден первый уровень)');
+        
     }
     if (bestTime && bestTime <= 120 && !achievements.includes('speedy')) {
         achievements.push('speedy');
-        alert('⚡ Достижение "Скороход"! (Прошёл игру быстрее 2 минут)');
+        
     }
     if (completedLevels.size === gameData.length && mistakesCount === 0 && !achievements.includes('no_mistakes')) {
         achievements.push('no_mistakes');
-        alert('🎯 Достижение "Без ошибок"! (Пройдена вся игра без единой ошибки)');
+        
     }
     if (gamesPlayed >= 5 && !achievements.includes('marathon')) {
         achievements.push('marathon');
-        alert('🏅 Достижение "Марафонец"! (Пройдено 5 раз)');
+        
     }
     
     if (achievements.length > prevLength) {
