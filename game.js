@@ -517,6 +517,11 @@ function onGameFullyCompleted() {
     if (isNewRecord) {
         alert(`🏆 Новый рекорд! ${getCurrentElapsedSeconds()} секунд!`);
     }
+
+     // Отправка события в Яндекс.Метрику
+    if (typeof ym !== 'undefined') {
+        ym(109908891, 'reachGoal', 'level10_completed');
+    }
 }
 
 // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
@@ -667,6 +672,10 @@ function startLevel(levelIndex) {
     }
     if (!currentSessionCompleted) {
         startGameTimer();
+        // Аналитика: первый уровень запущен
+        if (typeof ym !== 'undefined' && levelIndex === 0) {
+            ym(109908891, 'reachGoal', 'level1_started');
+        }
     }
     currentLevel = levelIndex;
     document.getElementById('main-page').style.display = 'none';
@@ -824,6 +833,11 @@ function handleWrongAnswer(resultTitle, resultMessage) {
     resultMessage.textContent = 'Неверный ответ. Подумай еще!';
     resultTitle.classList.remove('celebrate');
     mistakesCount++;
+
+    // Аналитика: ошибка на вопросе
+    if (typeof ym !== 'undefined') {
+        ym(109908891, 'reachGoal', 'question_error');
+    }
 }
 
 function closeModal() {
