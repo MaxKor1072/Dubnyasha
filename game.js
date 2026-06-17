@@ -970,7 +970,10 @@ function renderEditorForm(container) {
                     });
                 }
             } else if (type === 'order') {
-                const orderedItems = level.correctOrder.map(idx => level.items[idx]);
+                // Защита от отсутствия полей
+                const items = level.items || [];
+                const correctOrder = level.correctOrder || [];
+                const orderedItems = correctOrder.length ? correctOrder.map(idx => items[idx]) : [];
                 fieldsContainer.innerHTML += `<label>Элементы (по одному на строку, в правильном порядке):</label>
                     <textarea class="edit-order-items" rows="6">${orderedItems.map(escapeHtml).join('\n')}</textarea>`;
             }
