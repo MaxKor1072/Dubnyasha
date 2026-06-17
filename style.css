@@ -456,7 +456,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: var(--color-node-border);
+    background: #6A6FB0;
     padding: 8px 18px;
     border-radius: 50px;
     backdrop-filter: blur(5px);
@@ -464,7 +464,7 @@ body {
     margin-left: auto;
     width: fit-content;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    background: var(--color-panel-bg);
+    
 }
 
 #user-greeting {
@@ -472,11 +472,10 @@ body {
     font-weight: 500;
 }
 
-.logout-btn,
-.edit-btn {
-    background: #FFFFFF;
-    border: 1px solid #FFFFFF;
-    color: var(--color-text-dark); /* #3F3F8C */
+.logout-btn, .edit-btn {
+    background: rgba(63, 63, 140, 0.3);   /* тёмно-синий полупрозрачный */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
     padding: 6px 16px;
     border-radius: 40px;
     cursor: pointer;
@@ -485,10 +484,8 @@ body {
     font-weight: 500;
 }
 
-.logout-btn:hover,
-.edit-btn:hover {
-    background: #F0F2F8;
-    border-color: #F0F2F8;
+.logout-btn:hover, .edit-btn:hover {
+    background: rgba(63, 63, 140, 0.5);
 }
 
 /* ===== ЗАДАНИЯ НА ПОРЯДОК (DRAG & DROP) ===== */
